@@ -1,4 +1,4 @@
-package com.ejemplo.tienda.controller;
+package com.ejemplo.tienda.exception;
 
 import com.ejemplo.tienda.exception.ResourceNotFoundException;
 import java.util.HashMap;

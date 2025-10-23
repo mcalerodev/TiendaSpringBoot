@@ -122,7 +122,7 @@ function mostrarProductos(productos) {
             <td class="text-center"><span class="badge bg-secondary">${producto.categoria}</span></td>
             <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
-                    <button class="btn btn-outline-info" onclick='verDetalles(${JSON.stringify(producto)})' title="Ver Detalles">
+                    <button class="btn btn-outline-info" onclick='mostrarProducto(${producto.id})' title="Ver Detalles">
                         <i class="bi bi-eye"></i>
                     </button>
                     <button class="btn btn-outline-warning" onclick="editarProducto(${producto.id})" title="Editar">
@@ -135,21 +135,6 @@ function mostrarProductos(productos) {
             </td>
         </tr>
     `).join('');
-}
-
-// Ver detalles del producto en modal
-function verDetalles(producto) {
-    document.getElementById('detalleId').textContent = producto.id;
-    document.getElementById('detalleSku').textContent = producto.sku;
-    document.getElementById('detalleNombre').textContent = producto.nombre;
-    document.getElementById('detalleDescripcion').textContent = producto.descripcion;
-    document.getElementById('detallePrecio').textContent = '$' + parseFloat(producto.precio).toFixed(2);
-    document.getElementById('detalleVencimiento').textContent = formatearFecha(producto.vencimiento);
-    document.getElementById('detalleCategoria').textContent = producto.categoria;
-    
-    // Mostrar modal
-    const modal = new bootstrap.Modal(document.getElementById('modalDetalles'));
-    modal.show();
 }
 
 // ============================================
@@ -210,7 +195,7 @@ async function agregarProducto(producto) {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.mensaje || 'Error al crear producto');
+            throw new Error(error.message || 'Error al crear producto');
         }
 
         const nuevoProducto = await response.json();
@@ -223,6 +208,41 @@ async function agregarProducto(producto) {
         console.error('Error al agregar producto:', error);
         mostrarAlerta(`<i class="bi bi-exclamation-triangle"></i> ${error.message}`, 'danger');
     }
+}
+// ============================================
+// OPERACIONES CRUD - SHOW
+// ============================================
+// Mostrar detalle de un producto
+ async function mostrarProducto(id) {
+
+    try {
+        const response = await fetch(`${API_URL}/${id}`);
+        if (response.ok) {
+            const producto = await response.json();
+            verDetalles(producto);
+
+        } else {
+            mostrarAlerta(`<i class="bi bi-exclamation-triangle"></i> ${response.message}`, 'danger');
+
+        }
+    } catch (error) {
+        mostrarAlerta(`<i class="bi bi-exclamation-triangle"></i> No se pudo conectar con el servidor.`, 'danger');
+    }
+}
+
+// Ver detalles del producto en modal
+function verDetalles(producto) {
+    document.getElementById('detalleId').textContent = producto.id;
+    document.getElementById('detalleSku').textContent = producto.sku;
+    document.getElementById('detalleNombre').textContent = producto.nombre;
+    document.getElementById('detalleDescripcion').textContent = producto.descripcion;
+    document.getElementById('detallePrecio').textContent = '$' + parseFloat(producto.precio).toFixed(2);
+    document.getElementById('detalleVencimiento').textContent = formatearFecha(producto.vencimiento);
+    document.getElementById('detalleCategoria').textContent = producto.categoria;
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalles'));
+    modal.show();
 }
 
 // ============================================
@@ -335,7 +355,7 @@ async function actualizarProducto(id, producto) {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.mensaje || 'Error al actualizar producto');
+            throw new Error(error.message || 'Error al actualizar producto');
         }
 
         const productoActualizado = await response.json();
